@@ -2,6 +2,9 @@ package model;
 
 import java.time.LocalDateTime;
 
+/**
+ * The user model class
+ */
 public class User {
 
     private int userId;
@@ -40,30 +43,58 @@ public class User {
         this.lastUpdatedBy = lastUpdatedBy;
     }
 
+    /**
+     * ID getter
+     * @return userId
+     */
     public int getId() {
         return userId;
     }
 
+    /**
+     * Username getter
+     * @return username
+     */
     public String getUsername() {
         return username;
     }
 
+    /**
+     * password getter
+     * @return password
+     */
     public String getPassword() {
         return password;
     }
 
+    /**
+     * Create date  getter
+     * @return createDate
+     */
     public LocalDateTime getCreateDate() {
         return createDate;
     }
 
+    /**
+     * Created by  getter
+     * @return createdBy
+     */
     public String getCreatedBy() {
         return createdBy;
     }
 
+    /**
+     * Last update date getter
+     * @return lastUpdate
+     */
     public LocalDateTime getLastUpdate() {
         return lastUpdate;
     }
 
+    /**
+     * Last updated by getter
+     * @return lastUpdatedBy
+     */
     public String getLastUpdatedBy() {
         return lastUpdatedBy;
     }

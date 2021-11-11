@@ -1,6 +1,6 @@
 package controller;
 
-import dao.UserImpl;
+import dao.UserDaoImpl;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -8,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import model.User;
+import utils.Utils;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -15,6 +16,9 @@ import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.util.*;
 
+/**
+ * Login controller class
+ */
 public class Login {
 
     /**
@@ -107,18 +111,22 @@ public class Login {
 
         if (!doValidate()) return;
 
-        Optional<User> optional = new UserImpl().getByUsername("admin");
+        Optional<User> optional = new UserDaoImpl().getByUsername("admin");
 
-        if(optional.isPresent()) {
+        if (optional.isPresent()) {
+
             User user = optional.get();
+
             if (Objects.equals(user.getPassword(), passwordField.getText())) {
                 writeLoginActivity("Successful login for user '" +  usernameField.getText() + "'");
-                System.out.println("You are logged in!!!");
-                return;
+                Utils.switchScenes(event, "appointments");
+            } else {
+                setLoginError("invalid_credentials");
             }
-        }
 
-        setLoginError("invalid_credentials");
+        } else {
+            setLoginError("invalid_credentials");
+        }
     }
 
     /**

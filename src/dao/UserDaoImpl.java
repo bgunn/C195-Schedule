@@ -11,40 +11,77 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 
-public class UserImpl implements Dao<User> {
+/**
+ * <pre>
+ * User DAO concrete class
+ *
+ * This class implements the DAO interface and is responsible for handling all
+ * database operations on the users table.
+ * </pre>
+ */
+public class UserDaoImpl implements Dao<User> {
 
+    /**
+     * The table name
+     */
+    private final String table = "users";
+
+    /**
+     * Fetch the record by ID
+     *
+     * @param id  The user ID
+     * @return the object wrapped in an {@link Optional}
+     */
     @Override
     public Optional<User> get(long id) {
         return Optional.empty();
     }
 
+    /**
+     * <pre>
+     * Getter to select by any field name with a string value
+     *
+     * This method returns the first matching result
+     * </pre>
+     *
+     * @param field  The field name to compare in the WHERER condition
+     * @param value  The field value to compare in the WHERE condition
+     * @return the user wrapped in an {@link Optional}
+     */
     @Override
     public Optional<User> getBy(String field, String value) {
 
         Connection conn = null;
         PreparedStatement stmt = null;
 
-        String query = String.format("SELECT * FROM users WHERE %s = ?;", field);
+
+        String query = String.format("SELECT * FROM %s WHERE %s = ? LIMIT 1;", table, field);
 
         try {
+
             conn = JDBC.getConnection();
+
             stmt = conn.prepareStatement(query);
             stmt.setString(1, value);
+
             ResultSet results = stmt.executeQuery();
 
-            System.out.println(stmt);
-
-            while (results.next()) {
+            if (results.next()) {
                 return Optional.of(createUser(results));
             }
 
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
         return Optional.empty();
     }
 
+    /**
+     * Getter to select all records
+     *
+     * @return all database records {@link ObservableList}
+     */
     @Override
     public ObservableList<User> getAll() {
 
@@ -64,25 +101,55 @@ public class UserImpl implements Dao<User> {
         return null;
     }
 
+    /**
+     * Save an object to the database
+     *
+     * @return void
+     */
     @Override
     public void save(User user) {
 
     }
 
+    /**
+     * Update a database record
+     *
+     * @param t The object to update
+     * @param params An array of values to update on the object
+     * @return void
+     */
     @Override
     public void update(User user, String[] params) {
 
     }
 
+    /**
+     * Delete a database record
+     *
+     * @param t The object to delete
+     * @return void
+     */
     @Override
     public void delete(User user) {
 
     }
 
+    /**
+     * Convenience method to fetch a user by username
+     *
+     * @param username
+     * @return the user wrapped in an {@link Optional}
+     */
     public Optional<User> getByUsername(String username) {
         return getBy("User_Name", username);
     }
 
+    /**
+     * Instantiates a user object from the database results
+     *
+     * @param r  The result set containing the user database record
+     * @return User
+     */
     private User createUser(ResultSet r) throws SQLException {
         return new User(
                 r.getInt("User_ID"),

@@ -20,8 +20,7 @@ public abstract class JDBC {
      */
     public static Connection openConnection() {
         try {
-            connection = DriverManager.getConnection(jdbcURL,user,password);
-            System.out.println("Connection Successful");
+            connection = DriverManager.getConnection(jdbcURL, user, password);
         } catch (SQLException e) {
             e.printStackTrace();
         }
