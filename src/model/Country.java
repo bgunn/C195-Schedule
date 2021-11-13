@@ -2,62 +2,52 @@ package model;
 
 import java.time.LocalDateTime;
 
-/**
- * The user model class
- */
-public class User {
+public class Country {
 
     /**
-     * The user ID
+     * The country ID column
      */
-    private int id;
+    private int countryId;
 
     /**
-     * The username
+     * The country column
      */
-    private String username;
+    private String country;
 
     /**
-     * The password
-     */
-    private String password;
-
-    /**
-     * The created date
+     * The create date column
      */
     private LocalDateTime createDate;
 
     /**
-     * The created by user
+     * The created by column
      */
     private String createdBy;
 
     /**
-     * The last update date
+     * The last update column
      */
     private LocalDateTime lastUpdate;
 
     /**
-     * The last updated by user
+     * The last updated by column
      */
     private String lastUpdatedBy;
 
     /**
      * user Constructor.
      *
-     * @param id User ID
-     * @param username username
-     * @param password password
-     * @param createDate Create Date
-     * @param createdBy Created By
-     * @param lastUpdate Last Update
-     * @param lastUpdatedBy Last Updated By
+     * @param countryId
+     * @param country
+     * @param createDate
+     * @param createdBy
+     * @param lastUpdate
+     * @param lastUpdatedBy
      */
-    public User(int id, String username, String password, LocalDateTime createDate,
-                String createdBy, LocalDateTime lastUpdate, String lastUpdatedBy) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
+    public Country(int countryId, String country, LocalDateTime createDate, String createdBy,
+                LocalDateTime lastUpdate, String lastUpdatedBy) {
+        this.countryId = countryId;
+        this.country = country;
         this.createDate = createDate;
         this.createdBy = createdBy;
         this.lastUpdate = lastUpdate;
@@ -69,23 +59,15 @@ public class User {
      * @return userId
      */
     public int getId() {
-        return id;
+        return countryId;
     }
 
     /**
      * Username getter
      * @return username
      */
-    public String getUsername() {
-        return username;
-    }
-
-    /**
-     * password getter
-     * @return password
-     */
-    public String getPassword() {
-        return password;
+    public String getName() {
+        return country;
     }
 
     /**

@@ -33,9 +33,8 @@ public abstract class JDBC {
     public static void closeConnection() {
         try {
             connection.close();
-            System.out.println("Connection closed.");
         } catch (Exception e) {
-            // pass
+            e.printStackTrace();
         }
     }
 

@@ -1,67 +1,75 @@
 package model;
 
-import java.time.LocalDateTime;
+import dao.CountryDaoImpl;
 
-/**
- * The user model class
- */
-public class User {
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+public class Division {
 
     /**
-     * The user ID
+     * The division ID column
      */
     private int id;
 
     /**
-     * The username
+     * The division column
      */
-    private String username;
+    private String division;
 
     /**
-     * The password
-     */
-    private String password;
-
-    /**
-     * The created date
+     * The create date column
      */
     private LocalDateTime createDate;
 
     /**
-     * The created by user
+     * The created by column
      */
     private String createdBy;
 
     /**
-     * The last update date
+     * The last update column
      */
     private LocalDateTime lastUpdate;
 
     /**
-     * The last updated by user
+     * The last updated by column
      */
     private String lastUpdatedBy;
 
     /**
+     * The country ID
+     */
+    private int countryId;
+
+    /**
+     * The parent country
+     */
+    private Country country;
+
+    /**
      * user Constructor.
      *
-     * @param id User ID
-     * @param username username
-     * @param password password
-     * @param createDate Create Date
-     * @param createdBy Created By
-     * @param lastUpdate Last Update
-     * @param lastUpdatedBy Last Updated By
+     * @param id
+     * @param division
+     * @param createDate
+     * @param createdBy
+     * @param lastUpdate
+     * @param lastUpdatedBy
      */
-    public User(int id, String username, String password, LocalDateTime createDate,
-                String createdBy, LocalDateTime lastUpdate, String lastUpdatedBy) {
+    public Division(int id, String division, LocalDateTime createDate, String createdBy,
+                LocalDateTime lastUpdate, String lastUpdatedBy, int countryId) {
         this.id = id;
-        this.username = username;
-        this.password = password;
+        this.division = division;
         this.createDate = createDate;
         this.createdBy = createdBy;
         this.lastUpdate = lastUpdate;
         this.lastUpdatedBy = lastUpdatedBy;
+        this.countryId = countryId;
+
+        // Add the associated country object
+        Optional<Country> optional = new CountryDaoImpl().get(countryId);
+        this.country = optional.get();
     }
 
     /**
@@ -73,19 +81,11 @@ public class User {
     }
 
     /**
-     * Username getter
+     * Division name getter
      * @return username
      */
-    public String getUsername() {
-        return username;
-    }
-
-    /**
-     * password getter
-     * @return password
-     */
-    public String getPassword() {
-        return password;
+    public String getName() {
+        return division;
     }
 
     /**
@@ -97,7 +97,7 @@ public class User {
     }
 
     /**
-     * Created by  getter
+     * Created by getter
      * @return createdBy
      */
     public String getCreatedBy() {
@@ -118,5 +118,13 @@ public class User {
      */
     public String getLastUpdatedBy() {
         return lastUpdatedBy;
+    }
+
+    /**
+     * Return the associated country
+     * @return Country
+     */
+    public Country getCountry() {
+        return country;
     }
 }

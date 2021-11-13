@@ -80,6 +80,8 @@ public class Login {
      */
     private ResourceBundle resourceBundle;
 
+    private Utils utils = Utils.getInstance();
+
     /**
      * Initializes the login view and updates labels based on the locale.
      */
@@ -118,8 +120,16 @@ public class Login {
             User user = optional.get();
 
             if (Objects.equals(user.getPassword(), passwordField.getText())) {
+
+                // Log the user login activity
                 writeLoginActivity("Successful login for user '" +  usernameField.getText() + "'");
-                Utils.switchScenes(event, "appointments");
+
+                // Store the authenticated user on the utils singleton
+                utils.setUser(user);
+
+                // Open the appointments scene
+                utils.switchScenes(event, "appointments", "Appointments");
+
             } else {
                 setLoginError("invalid_credentials");
             }

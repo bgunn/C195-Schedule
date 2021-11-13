@@ -20,7 +20,7 @@ public interface Dao<T> {
      * @param id  The object ID
      * @return the object wrapped in an {@link Optional}
      */
-    Optional<T> get(long id);
+    Optional<T> get(int id);
 
     /**
      * <pre>
@@ -45,9 +45,9 @@ public interface Dao<T> {
     /**
      * Save an object to the database
      *
-     * @return void
+     * @return int
      */
-    void save(T t);
+    int save(T t);
 
     /**
      * Update a database record

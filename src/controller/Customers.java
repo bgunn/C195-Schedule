@@ -5,11 +5,13 @@ import utils.Utils;
 
 public class Customers {
 
+    private Utils utils = Utils.getInstance();
+
     public void onAppointmentsButtonClick(ActionEvent event) {
-        Utils.switchScenes(event, "appointments");
+        utils.switchScenes(event, "appointments", "Appointments");
     }
 
-    public void onNewCustomerButtonClick(ActionEvent event) {
-        Utils.switchScenes(event, "addCustomer");
+    public void onNewButtonClick(ActionEvent event) {
+        utils.openWindow(event, "addCustomer", "Add Customer");
     }
 }

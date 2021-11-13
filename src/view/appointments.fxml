@@ -11,16 +11,10 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="809.0" prefWidth="1345.0" style="-fx-background-color: #A5C4CA;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.Appointments">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="840.0" prefWidth="1345.0" style="-fx-background-color: #A5C4CA;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.Appointments">
    <children>
-      <ToolBar nodeOrientation="LEFT_TO_RIGHT" prefHeight="44.0" prefWidth="1345.0" style="-fx-spacing: 10px;">
+      <ToolBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="44.0" prefWidth="1345.0" style="-fx-spacing: 10px;">
         <items>
-            <Label prefHeight="17.0" prefWidth="570.0" />
-            <Label prefHeight="29.0" prefWidth="521.0" text="Appointments">
-               <font>
-                  <Font size="24.0" />
-               </font>
-            </Label>
             <Button layoutX="10.0" layoutY="13.0" mnemonicParsing="false" text="Reports">
                <font>
                   <Font name="CiscoSans-Bold" size="18.0" />
@@ -32,8 +26,11 @@
                </font>
             </Button>
         </items>
+         <padding>
+            <Insets left="25.0" />
+         </padding>
       </ToolBar>
-      <TableView layoutX="23.0" layoutY="151.0" prefHeight="613.0" prefWidth="1301.0">
+      <TableView layoutX="23.0" layoutY="194.0" prefHeight="613.0" prefWidth="1301.0">
         <columns>
           <TableColumn prefWidth="75.0" text="Appt. ID" />
           <TableColumn prefWidth="262.0" text="Title" />
@@ -47,7 +44,7 @@
             <TableColumn prefWidth="85.0" text="User ID" />
         </columns>
       </TableView>
-      <HBox alignment="CENTER_LEFT" layoutX="22.0" layoutY="107.0" prefHeight="45.0" prefWidth="1301.0" style="-fx-background-color: #E5E9EA; -fx-border-color: #ABABAB;">
+      <HBox alignment="CENTER_LEFT" layoutX="22.0" layoutY="149.0" prefHeight="45.0" prefWidth="1301.0" style="-fx-background-color: #E5E9EA; -fx-border-color: #ABABAB;">
          <children>
             <Button mnemonicParsing="false" text="New">
                <HBox.margin>
@@ -95,17 +92,39 @@
                   <Font name="CiscoSans" size="16.0" />
                </font>
             </Label>
-            <Label fx:id="upcomingApptMessage" prefHeight="24.0" prefWidth="886.0">
+            <Label fx:id="upcomingApptMessage" prefHeight="24.0" prefWidth="759.0">
                <font>
                   <Font name="CiscoSans" size="16.0" />
                </font>
             </Label>
-            <Label fx:id="currentDateTimeLabel" prefHeight="18.0" prefWidth="177.0">
+            <Label prefHeight="26.0" prefWidth="143.0" style="-fx-font-weight: bold;" text="Local Date / Time:">
                <font>
-                  <Font name="CiscoSans-Bold" size="14.0" />
+                  <Font name="CiscoSans" size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="currentDateTimeLabel" prefHeight="28.0" prefWidth="195.0" text="value">
+               <font>
+                  <Font name="CiscoSans" size="14.0" />
                </font>
             </Label>
          </children>
+      </HBox>
+      <HBox alignment="CENTER_RIGHT" layoutX="23.0" layoutY="81.0" prefHeight="29.0" prefWidth="1301.0" spacing="10.0">
+         <children>
+            <Label prefHeight="26.0" prefWidth="141.0" style="-fx-font-weight: bold;" text="Office Date / Time:">
+               <font>
+                  <Font name="CiscoSans" size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="officeDateTimeLabel" prefHeight="28.0" prefWidth="176.0" text="value">
+               <font>
+                  <Font name="CiscoSans" size="14.0" />
+               </font>
+            </Label>
+         </children>
+         <padding>
+            <Insets right="8.0" />
+         </padding>
       </HBox>
    </children>
 </AnchorPane>

@@ -22,18 +22,13 @@ import java.util.Optional;
 public class UserDaoImpl implements Dao<User> {
 
     /**
-     * The table name
-     */
-    private final String table = "users";
-
-    /**
      * Fetch the record by ID
      *
      * @param id  The user ID
      * @return the object wrapped in an {@link Optional}
      */
     @Override
-    public Optional<User> get(long id) {
+    public Optional<User> get(int id) {
         return Optional.empty();
     }
 
@@ -51,17 +46,13 @@ public class UserDaoImpl implements Dao<User> {
     @Override
     public Optional<User> getBy(String field, String value) {
 
-        Connection conn = null;
-        PreparedStatement stmt = null;
-
-
-        String query = String.format("SELECT * FROM %s WHERE %s = ? LIMIT 1;", table, field);
+        String query = String.format("SELECT * FROM users WHERE %s = ? LIMIT 1;", field);
 
         try {
 
-            conn = JDBC.getConnection();
+            Connection conn = JDBC.getConnection();
 
-            stmt = conn.prepareStatement(query);
+            PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setString(1, value);
 
             ResultSet results = stmt.executeQuery();
@@ -90,14 +81,19 @@ public class UserDaoImpl implements Dao<User> {
         ObservableList<User> users = FXCollections.observableArrayList();
 
         try {
+
             ResultSet results = JDBC.getConnection().createStatement().executeQuery(query);
+
             while (results.next()) {
                 users.add(createUser(results));
             }
+
             return users;
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return null;
     }
 
@@ -107,14 +103,14 @@ public class UserDaoImpl implements Dao<User> {
      * @return void
      */
     @Override
-    public void save(User user) {
-
+    public int save(User user) {
+        return 0;
     }
 
     /**
      * Update a database record
      *
-     * @param t The object to update
+     * @param user The object to update
      * @param params An array of values to update on the object
      * @return void
      */
@@ -126,7 +122,7 @@ public class UserDaoImpl implements Dao<User> {
     /**
      * Delete a database record
      *
-     * @param t The object to delete
+     * @param user The object to delete
      * @return void
      */
     @Override
