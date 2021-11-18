@@ -10,9 +10,12 @@ import javafx.stage.Stage;
 import model.User;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Utils {
 
@@ -24,7 +27,7 @@ public class Utils {
     /**
      * The date/time string
      */
-    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm");
+    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     /**
      * Holds the authenticated user object
@@ -60,16 +63,69 @@ public class Utils {
         this.user = user;
     }
 
+    /**
+     * Convenience method to get and format the local date/time
+     *
+     * @return the formatted date/time
+     */
     public String getLocalDateTimeString() {
         return dtf.format(ZonedDateTime.now());
     }
 
+    /**
+     * Convenience method to get and format the office date/time
+     *
+     * @return the formatted date/time
+     */
     public String getOfficeDateTimeString() {
         return dtf.format(ZonedDateTime.now().withZoneSameInstant(ZoneId.of("America/New_York")));
     }
 
+    /**
+     * Convenience method to get and format the UTC date/time
+     *
+     * @return the formatted date/time
+     */
     public String getUTCDateTimeString() {
         return dtf.format(ZonedDateTime.now().withZoneSameInstant(ZoneId.of("UTC")));
+    }
+
+    /**
+     * Convenience method to convert the LocalDateTime to UTC and return as a string
+     *
+     * @return the formatted date/time
+     */
+    public String localDateTimeToUTCString(LocalDateTime ldt) {
+        return dtf.format(ldt.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC")));
+    }
+
+    /**
+     * Convenience method to return a common DateTimeFormatter object
+     *
+     * @return dtf The date time formatter
+     */
+    public DateTimeFormatter getDateTimeFormatter() {
+        return dtf;
+    }
+
+    /**
+     * <pre>
+     * Parse ID from combobox selector
+     *
+     * Combobox values are added in the form id - name e.g. "2 - Bob Smith"
+     * This method parses and returns the integer ID value.
+     * </pre>
+     * @return id The parsed ID or 0
+     */
+    public int getIdFromComboString(String string) {
+
+        Matcher m = Pattern.compile("^(\\d+)\\s.*").matcher(string);
+
+        if (m.find()) {
+            return Integer.parseInt(m.group(1));
+        }
+
+        return 0;
     }
 
     /**

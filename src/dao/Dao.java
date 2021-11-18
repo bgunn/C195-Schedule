@@ -45,24 +45,23 @@ public interface Dao<T> {
     /**
      * Save an object to the database
      *
-     * @return int
+     * @return T
      */
-    int save(T t);
+    T save(T t);
 
     /**
      * Update a database record
      *
      * @param t The object to update
-     * @param params An array of values to update on the object
      * @return void
      */
-    void update(T t, String[] params);
+    T update(T t);
 
     /**
      * Delete a database record
      *
      * @param t The object to delete
-     * @return void
+     * @return Boolean
      */
-    void delete(T t);
+    Boolean delete(T t);
 }

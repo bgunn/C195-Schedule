@@ -6,9 +6,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import utils.JDBC;
 
-
-//import model.*;
-
 import java.io.*;
 import java.util.Locale;
 import java.util.ResourceBundle;

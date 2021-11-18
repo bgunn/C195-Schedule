@@ -23,6 +23,26 @@ public class DivisionDaoImpl implements Dao<Division> {
 
     @Override
     public Optional<Division> get(int id) {
+
+        String query = "SELECT * FROM first_level_divisions WHERE Division_ID = ?;";
+
+        try {
+
+            Connection conn = JDBC.getConnection();
+
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setInt(1, id);
+
+            ResultSet results = stmt.executeQuery();
+
+            if (results.next()) {
+                return Optional.of(createDivision(results));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         return Optional.empty();
     }
 
@@ -57,18 +77,18 @@ public class DivisionDaoImpl implements Dao<Division> {
     }
 
     @Override
-    public int save(Division country) {
-        return 0;
+    public Division save(Division country) {
+        return null;
     }
 
     @Override
-    public void update(Division country, String[] params) {
-
+    public Division update(Division country) {
+        return null;
     }
 
     @Override
-    public void delete(Division country) {
-
+    public Boolean delete(Division country) {
+        return true;
     }
 
     /**

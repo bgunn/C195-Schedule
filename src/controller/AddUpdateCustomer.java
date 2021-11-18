@@ -15,7 +15,14 @@ import model.Customer;
 import model.Division;
 import utils.Utils;
 
-public class AddCustomer {
+
+public class AddUpdateCustomer {
+
+    /**
+     * Customer ID field
+     */
+    @FXML
+    private TextField idField;
 
     /**
      * Customer name label
@@ -75,7 +82,7 @@ public class AddCustomer {
      * Customer country select
      */
     @FXML
-    private ComboBox countrySelect;
+    private ComboBox<String> countrySelect;
 
     /**
      * Customer division label
@@ -87,7 +94,7 @@ public class AddCustomer {
      * Customer division select
      */
     @FXML
-    private ComboBox divisionSelect;
+    private ComboBox<String> divisionSelect;
 
     /**
      * label for displaying error messages
@@ -95,7 +102,7 @@ public class AddCustomer {
     @FXML
     public Label addCustomerErrorLabel;
 
-    private Utils utils = Utils.getInstance();
+    private final Utils utils = Utils.getInstance();
 
     /**
      * Initializes the addCustomer view and populates the dropdown selectors
@@ -104,8 +111,8 @@ public class AddCustomer {
     @FXML
     public void initialize() {
 
-        // Division dropdown is disabled until a country is selected
-        divisionSelect.setDisable(true);
+        // Get the selected customer record or null if this is a new customer
+        Customer customer = Customers.getSelectedCustomer();
 
         ObservableList<String> countrySelectList = FXCollections.observableArrayList();
 
@@ -123,33 +130,106 @@ public class AddCustomer {
         }
 
         countrySelect.setItems(countrySelectList);
+
+        if (customer == null) {
+            // Disable the division selector until a country is selected
+            divisionSelect.setDisable(true);
+        } else {
+
+            String countryValue = customer.getDivision().getCountry().getId() + " - " +
+                                  customer.getDivision().getCountry().getName();
+
+            idField.setText(String.valueOf(customer.getId()));
+            nameField.setText(customer.getName());
+            phoneField.setText(customer.getPhone());
+            addressField.setText(customer.getAddress());
+            postCodeField.setText(customer.getPostCode());
+            countrySelect.setValue(countryValue);
+
+            initDivisionSelector();
+            divisionSelect.setValue(customer.getDivisionId() + " - " + customer.getDivision().getName());
+        }
     }
 
     /**
-     * Saves the part in the inventory parts collection
+     * Saves the customer
      *
      * @param event Save button clicked event
      */
     @FXML
     public void onSaveButtonClick(ActionEvent event) {
 
-        doValidate();
+        if (!doValidate()) { return; }
+
+        Boolean status = null;
+
+        if (idField.getText().isEmpty()) {
+            status = createCustomer();
+        } else {
+            status = updateCustomer();
+        }
+
+        if (Boolean.TRUE.equals(status)) {
+
+            // Update the customers observable list
+            Customer.getAll();
+
+            // Close the add/update window
+            utils.closeWindow(event);
+        }
+    }
+
+    /**
+     * Creates a new customer
+     */
+    private Boolean createCustomer() {
 
         try {
+
             new Customer(
                     nameField.getText(),
-                    phoneField.getText(),
                     addressField.getText(),
                     postCodeField.getText(),
-                    (String) divisionSelect.getSelectionModel().getSelectedItem()
+                    phoneField.getText(),
+                    utils.getIdFromComboString((String) divisionSelect.getSelectionModel().getSelectedItem())
             ).save();
 
-            utils.closeWindow(event);
+            return true;
 
         } catch (Exception e) {
             e.printStackTrace();
             utils.doError("Add Customer", "There was an unexpected error adding the customer");
         }
+
+        return false;
+    }
+
+    /**
+     * Update an existing customer
+     *
+     * @return returns true success or false on failure
+     */
+    private Boolean updateCustomer() {
+
+        try {
+
+            Customer c = Customer.get(Integer.parseInt(idField.getText()));
+
+            c.setName(nameField.getText());
+            c.setAddress(addressField.getText());
+            c.setPostCode(postCodeField.getText());
+            c.setPhone(phoneField.getText());
+            c.setDivisionId(utils.getIdFromComboString((String) divisionSelect.getSelectionModel().getSelectedItem()));
+            c.save();
+
+            return true;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            utils.doError("Update Customer", "There was an unexpected error updating the customer");
+        }
+
+        return false;
     }
 
     /**
@@ -214,6 +294,12 @@ public class AddCustomer {
      */
     @FXML
     public void onCountrySelect(ActionEvent event) {
+        initDivisionSelector();
+    }
+
+    private void initDivisionSelector() {
+
+        divisionSelect.setValue("");
 
         ObservableList<String> divisionSelectList = FXCollections.observableArrayList();
 
@@ -223,7 +309,7 @@ public class AddCustomer {
 
             if (divisions != null) {
                 for (Division division: divisions) {
-                    divisionSelectList.add(division.getName());
+                    divisionSelectList.add(division.getId() + " - " + division.getName());
                 }
             }
 

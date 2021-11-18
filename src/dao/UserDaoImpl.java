@@ -29,6 +29,26 @@ public class UserDaoImpl implements Dao<User> {
      */
     @Override
     public Optional<User> get(int id) {
+
+        String query = "SELECT * FROM users WHERE User_ID = ?;";
+
+        try {
+
+            Connection conn = JDBC.getConnection();
+
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setInt(1, id);
+
+            ResultSet results = stmt.executeQuery();
+
+            if (results.next()) {
+                return Optional.of(createUser(results));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         return Optional.empty();
     }
 
@@ -103,20 +123,19 @@ public class UserDaoImpl implements Dao<User> {
      * @return void
      */
     @Override
-    public int save(User user) {
-        return 0;
+    public User save(User user) {
+        return null;
     }
 
     /**
      * Update a database record
      *
      * @param user The object to update
-     * @param params An array of values to update on the object
      * @return void
      */
     @Override
-    public void update(User user, String[] params) {
-
+    public User update(User user) {
+        return null;
     }
 
     /**
@@ -126,8 +145,8 @@ public class UserDaoImpl implements Dao<User> {
      * @return void
      */
     @Override
-    public void delete(User user) {
-
+    public Boolean delete(User user) {
+        return true;
     }
 
     /**

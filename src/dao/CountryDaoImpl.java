@@ -21,11 +21,6 @@ import java.util.Optional;
  */
 public class CountryDaoImpl implements Dao<Country> {
 
-    /**
-     * The table name
-     */
-    private final String table = "countries";
-
     @Override
     public Optional<Country> get(int id) {
 
@@ -59,7 +54,7 @@ public class CountryDaoImpl implements Dao<Country> {
     @Override
     public ObservableList<Country> getAll() {
 
-        String query = String.format("SELECT * FROM %s;", table);
+        String query = "SELECT * FROM countries";
 
         ObservableList<Country> countries = FXCollections.observableArrayList();
 
@@ -81,18 +76,18 @@ public class CountryDaoImpl implements Dao<Country> {
     }
 
     @Override
-    public int save(Country country) {
-        return 0;
+    public Country save(Country country) {
+        return null;
     }
 
     @Override
-    public void update(Country country, String[] params) {
-
+    public Country update(Country country) {
+        return null;
     }
 
     @Override
-    public void delete(Country country) {
-
+    public Boolean delete(Country country) {
+        return true;
     }
 
     /**
