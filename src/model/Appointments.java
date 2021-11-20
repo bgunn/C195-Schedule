@@ -19,7 +19,7 @@ public class Appointments {
     /**
      * Holds the observable customers list
      */
-    private final ObservableList<Appointment> allAppointments = FXCollections.observableArrayList();
+    private final ObservableList<Appointment> appointments = FXCollections.observableArrayList();
 
     /**
      * Return the Appointments instance
@@ -33,9 +33,7 @@ public class Appointments {
      * Returns all appointments
      * @return allAppointments All appointments
      */
-    public ObservableList<Appointment> getAllAppointments() {
-        return allAppointments;
+    public ObservableList<Appointment> getAppointments() {
+        return appointments;
     }
-
-
 }

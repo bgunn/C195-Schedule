@@ -6,6 +6,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import model.User;
 
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -73,6 +75,15 @@ public class Utils {
     }
 
     /**
+     * Convenience method to format the specified LocalDateTime to a string
+     *
+     * @return The formatted date/time string
+     */
+    public String getStringFromLocalDateTime(LocalDateTime ldt) {
+        return dtf.format(ldt);
+    }
+
+    /**
      * Convenience method to get and format the office date/time
      *
      * @return the formatted date/time
@@ -97,6 +108,15 @@ public class Utils {
      */
     public String localDateTimeToUTCString(LocalDateTime ldt) {
         return dtf.format(ldt.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC")));
+    }
+
+    /**
+     * Convenience method to convert the LocalDateTime to EST ZonedDateTime
+     *
+     * @return the formatted date/time
+     */
+    public ZonedDateTime localDateTimeToEST(LocalDateTime ldt) {
+        return ldt.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("America/New_York"));
     }
 
     /**
@@ -174,7 +194,7 @@ public class Utils {
             screen.setScene(new Scene(scene));
             screen.show();
         } catch (Exception e) {
-            doError("Unexpected Error", "There was an unexpected error!");
+            doError("Unexpected Error", "There was an unexpected error switching scenes!");
             e.printStackTrace();
         }
     }
@@ -183,9 +203,28 @@ public class Utils {
      * Convenience method for setting popup errors
      */
     public void doError(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
+        doMessage(new Alert(Alert.AlertType.ERROR), title, message);
+    }
+
+    /**
+     * Convenience method for setting popup confirmations
+     * @return
+     */
+    public Optional<ButtonType> doConfirm(String title, String message) {
+        return doMessage(new Alert(Alert.AlertType.CONFIRMATION), title, message);
+    }
+
+    /**
+     * Convenience method for setting popup confirmations
+     * @return
+     */
+    public Optional<ButtonType> doInform(String title, String message) {
+        return doMessage(new Alert(Alert.AlertType.INFORMATION), title, message);
+    }
+
+    private Optional<ButtonType> doMessage(Alert alert, String title, String message) {
         alert.setTitle(title);
         alert.setContentText(message);
-        alert.showAndWait();
+        return alert.showAndWait();
     }
 }

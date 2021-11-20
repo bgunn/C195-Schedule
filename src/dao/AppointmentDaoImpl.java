@@ -4,7 +4,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.Appointment;
 import model.Appointments;
-import model.Customer;
 import utils.JDBC;
 import utils.Utils;
 
@@ -14,8 +13,8 @@ import java.util.Optional;
 public class AppointmentDaoImpl implements Dao<Appointment> {
 
     private final Utils utils = Utils.getInstance();
-    private final Appointments appointments = Appointments.getInstance();
-    private final ObservableList<Appointment> allAppointments = appointments.getAllAppointments();;
+    private final ObservableList<Appointment> appointments = Appointments.getInstance().getAppointments();
+    private Connection conn = JDBC.getConnection();
 
     @Override
     public Optional<Appointment> get(int id) {
@@ -23,8 +22,6 @@ public class AppointmentDaoImpl implements Dao<Appointment> {
         String query = "SELECT * FROM appointments WHERE Appointment_ID = ?;";
 
         try {
-
-            Connection conn = JDBC.getConnection();
 
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setInt(1, id);
@@ -57,17 +54,17 @@ public class AppointmentDaoImpl implements Dao<Appointment> {
 
         String query = "SELECT * FROM appointments";
 
-        allAppointments.clear();
+        appointments.clear();
 
         try {
 
-            ResultSet results = JDBC.getConnection().createStatement().executeQuery(query);
+            ResultSet results = conn.createStatement().executeQuery(query);
 
             while (results.next()) {
-                allAppointments.add(createAppointment(results));
+                appointments.add(createAppointment(results));
             }
 
-            return allAppointments;
+            return appointments;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -77,22 +74,37 @@ public class AppointmentDaoImpl implements Dao<Appointment> {
     }
 
     /**
-     * Getter to select all records by Customer_ID
+     * Getter to select all appointments for the current week
      *
-     * @return appointments
+     * @return list of appointments {@link ObservableList}
      */
-    public ObservableList<Appointment> getAllByCustomerId(int customer_id) {
+    public ObservableList<Appointment> getThisWeek() {
+        return getByDateQuery("SELECT * FROM appointments WHERE WEEK(Start) = WEEK(?);");
+    }
 
-        String query = "SELECT * FROM appointments WHERE Customer_ID = ?";
+    /**
+     * Getter to select all appointments for the current month
+     *
+     * @return list of appointments {@link ObservableList}
+     */
+    public ObservableList<Appointment> getThisMonth() {
+        return getByDateQuery("SELECT * FROM appointments WHERE MONTH(Start) = MONTH(?);");
+    }
 
-        ObservableList<Appointment> appointments = FXCollections.observableArrayList();
+    /**
+     * Executes the provided query and applies a single prepared statement parameter
+     * of the local date/time string.
+     *
+     * @return list of appointments {@link ObservableList}
+     */
+    private ObservableList<Appointment> getByDateQuery(String query) {
+
+        appointments.clear();
 
         try {
 
-            Connection conn = JDBC.getConnection();
-
             PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setInt(1, customer_id);
+            stmt.setString(1, utils.getLocalDateTimeString());
 
             ResultSet results = stmt.executeQuery();
 
@@ -102,6 +114,84 @@ public class AppointmentDaoImpl implements Dao<Appointment> {
 
             return appointments;
 
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    /**
+     * Getter to select all records by the specified customer ID
+     *
+     * @return appointments
+     */
+    public ObservableList<Appointment> getAllByCustomerId(int id) {
+
+        String query = "SELECT * FROM appointments WHERE Customer_ID = ?;";
+
+        ObservableList<Appointment> aptList = FXCollections.observableArrayList();
+
+        try {
+
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setInt(1, id);
+
+            ResultSet results = stmt.executeQuery();
+
+            while (results.next()) {
+                aptList.add(createAppointment(results));
+            }
+
+            return aptList;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    /**
+     * Getter to select the next upcoming appointment within 15 minutes by user ID
+     *
+     * @return appointment
+     */
+    public Appointment getUpcomingByUserId(int id) {
+
+        String query = "SELECT * FROM appointments WHERE User_ID = ? " +
+                "AND Start >= now() AND Start <= date_add(now(),interval 15 minute) " +
+                "ORDER BY Start ASC LIMIT 1;";
+
+        ObservableList<Appointment> aptList = FXCollections.observableArrayList();
+
+        try {
+
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setInt(1, id);
+
+            ResultSet results = stmt.executeQuery();
+
+            while (results.next()) {
+                return createAppointment(results);
+            }
+
+            return null;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public ResultSet customerReport() {
+
+        String query = "SELECT Type, MONTHNAME(Start) as Month, count(*) AS Count " +
+                "FROM appointments GROUP BY Type, MONTHNAME(Start) ORDER BY Type, Start;";
+
+        try {
+            return conn.createStatement().executeQuery(query);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -132,15 +222,13 @@ public class AppointmentDaoImpl implements Dao<Appointment> {
 
         try {
 
-            Connection conn = JDBC.getConnection();
-
             PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, appointment.getTitle());
             stmt.setString(2, appointment.getDescription());
             stmt.setString(3, appointment.getLocation());
             stmt.setString(4, appointment.getType());
-            stmt.setString(5, appointment.getStart().format(utils.getDateTimeFormatter()));
-            stmt.setString(6, appointment.getEnd().format(utils.getDateTimeFormatter()));
+            stmt.setString(5, utils.localDateTimeToUTCString(appointment.getStart()));
+            stmt.setString(6, utils.localDateTimeToUTCString(appointment.getEnd()));
             stmt.setString(7, utils.getUTCDateTimeString());
             stmt.setString(8, utils.getUser().getUsername());
             stmt.setString(9, utils.getUTCDateTimeString());
@@ -160,7 +248,12 @@ public class AppointmentDaoImpl implements Dao<Appointment> {
                 if (generatedKeys.next()) {
 
                     Optional<Appointment> optional = get(generatedKeys.getInt(1));
-                    return optional.get();
+
+                    Appointment a = optional.get();
+
+                    appointments.add(a);
+
+                    return a;
 
                 } else {
                     throw new SQLException("Failed to get appointment ID from the inserted appointment");
@@ -188,8 +281,6 @@ public class AppointmentDaoImpl implements Dao<Appointment> {
 
         try {
 
-            Connection conn = JDBC.getConnection();
-
             PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, appointment.getTitle());
             stmt.setString(2, appointment.getDescription());
@@ -211,7 +302,12 @@ public class AppointmentDaoImpl implements Dao<Appointment> {
             }
 
             Optional<Appointment> optional = get(appointment.getId());
-            return optional.get();
+
+            Appointment a = optional.get();
+
+            appointments.set(appointments.indexOf(a), a);
+
+            return a;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -227,15 +323,13 @@ public class AppointmentDaoImpl implements Dao<Appointment> {
 
         try {
 
-            Connection conn = JDBC.getConnection();
-
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setInt(1, appointment.getId());
 
             stmt.execute();
 
             if (stmt.getUpdateCount() > 0) {
-                allAppointments.remove(appointment);
+                appointments.remove(appointment);
                 return true;
             }
 

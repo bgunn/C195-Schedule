@@ -1,8 +1,5 @@
 package controller;
 
-import dao.ContactDaoImpl;
-import dao.CustomerDaoImpl;
-import dao.UserDaoImpl;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -21,8 +18,8 @@ import utils.Utils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.chrono.ChronoLocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class AddUpdateAppointment {
@@ -183,9 +180,9 @@ public class AddUpdateAppointment {
 
         try {
 
-            ObservableList<Contact> contacts = new ContactDaoImpl().getAll();
-            ObservableList<User> users = new UserDaoImpl().getAll();
-            ObservableList<Customer> customers = new CustomerDaoImpl().getAll();
+            ObservableList<Contact> contacts = Contact.getAll();
+            ObservableList<User> users = User.getAll();
+            ObservableList<Customer> customers = Customer.getAll();
 
             if (contacts != null) {
                 for (Contact contact: contacts) {
@@ -239,7 +236,7 @@ public class AddUpdateAppointment {
 
         if (!doValidate()) { return; }
 
-        Boolean status = null;
+        Boolean status;
 
         if (idField.getText().isEmpty()) {
             status = createAppointment();
@@ -248,14 +245,8 @@ public class AddUpdateAppointment {
         }
 
         if (Boolean.TRUE.equals(status)) {
-
-            // Update the customers observable list
-            Appointment.getAll();
-
-            // Close the add/update window
             utils.closeWindow(event);
         }
-
     }
 
     /**
@@ -265,13 +256,9 @@ public class AddUpdateAppointment {
      */
     private Boolean createAppointment() {
 
-        // Combines the start and end date strings with the time strings
-        String startString = startDatePicker.getValue() + " " + startTimeField.getText();
-        String endString = endDatePicker.getValue() + " " + endTimeField.getText();
-
-        int contactId = utils.getIdFromComboString((String) contactSelect.getSelectionModel().getSelectedItem());
-        int userId = utils.getIdFromComboString((String) userSelect.getSelectionModel().getSelectedItem());
-        int customerId = utils.getIdFromComboString((String) customerSelect.getSelectionModel().getSelectedItem());
+        int contactId = getIdFromComboBox(contactSelect);
+        int userId = getIdFromComboBox(userSelect);
+        int customerId = getIdFromComboBox(customerSelect);
 
         try {
 
@@ -280,8 +267,8 @@ public class AddUpdateAppointment {
                     descriptionField.getText(),
                     locationField.getText(),
                     typeField.getText(),
-                    LocalDateTime.parse(startString, utils.getDateTimeFormatter()),
-                    LocalDateTime.parse(endString, utils.getDateTimeFormatter()),
+                    getStart(),
+                    getEnd(),
                     contactId,
                     userId,
                     customerId
@@ -304,13 +291,9 @@ public class AddUpdateAppointment {
      */
     private Boolean updateAppointment() {
 
-        // Combines the start and end date strings with the time strings
-        String startString = startDatePicker.getValue() + " " + startTimeField.getText();
-        String endString = endDatePicker.getValue() + " " + endTimeField.getText();
-
-        int contactId = utils.getIdFromComboString((String) contactSelect.getSelectionModel().getSelectedItem());
-        int userId = utils.getIdFromComboString((String) userSelect.getSelectionModel().getSelectedItem());
-        int customerId = utils.getIdFromComboString((String) customerSelect.getSelectionModel().getSelectedItem());
+        int contactId = getIdFromComboBox(contactSelect);
+        int userId = getIdFromComboBox(userSelect);
+        int customerId = getIdFromComboBox(customerSelect);
 
         try {
 
@@ -320,8 +303,8 @@ public class AddUpdateAppointment {
             a.setDescription(descriptionField.getText());
             a.setLocation(locationField.getText());
             a.setType(typeField.getText());
-            a.setStart(LocalDateTime.parse(startString, utils.getDateTimeFormatter()));
-            a.setEnd(LocalDateTime.parse(endString, utils.getDateTimeFormatter()));
+            a.setStart(getStart());
+            a.setEnd(getEnd());
             a.setContactId(contactId);
             a.setUserId(userId);
             a.setCustomerId(customerId);
@@ -352,55 +335,126 @@ public class AddUpdateAppointment {
 
         clearErrors();
 
+        return !hasMissingData() && !hasInvalidDateTime() && !hasOverlappingAppointment();
+    }
+
+    /**
+     * Checks that the entered date and time are valid and meet business rules.
+     *
+     * @return Boolean
+     */
+    private Boolean hasInvalidDateTime() {
+
+        boolean hasInvalidDateTime = true;
+
+        String errorTitle = "Appointment Date/Time";
+
+        int startHour = utils.localDateTimeToEST(getStart()).getHour();
+        int endHour = utils.localDateTimeToEST(getEnd()).getHour();
+
+        if (startHour < 8 || startHour > 22 || endHour < 8 || endHour > 22) {
+
+            utils.doError(errorTitle, "The appointment time is outside of business hours (08:00 - 22:00)");
+
+        } else if (getStart().isBefore(ChronoLocalDateTime.from(ZonedDateTime.now()))) {
+
+            utils.doError(errorTitle, "The appointment start date/time is in the past!");
+
+        } else if (getEnd().isBefore(ChronoLocalDateTime.from(ZonedDateTime.now()))) {
+
+            utils.doError(errorTitle, "The appointment end date/time is in the past!");
+
+        } else if (getEnd().isBefore(ChronoLocalDateTime.from(getStart()))) {
+
+            utils.doError(errorTitle, "The appointment start date/time is after the end date/time!");
+
+        } else {
+            hasInvalidDateTime = false;
+        }
+
+        return hasInvalidDateTime;
+    }
+
+    /**
+     * Checks to see if any existing appointment times for the 
+     * selected customer overlap.
+     *
+     * @return Boolean
+     */
+    private Boolean hasOverlappingAppointment() {
+
+        ObservableList<Appointment> appointments = Customer.get(getIdFromComboBox(customerSelect)).getAppointments();
+
+        int id = idField.getText().isEmpty() ? 0 : Integer.parseInt(idField.getText());
+
+        for (Appointment a : appointments) {
+
+            // Don't compare an appointment being edited to itself
+            if (id == a.getId()) {
+                continue;
+            }
+
+            if (a.getStart().isBefore(getEnd()) && getStart().isBefore(a.getEnd())) {
+                utils.doError("Appointment date/time", "The appointment overlaps with appointment " + a.getId());
+                return true;
+            }
+        };
+
+        return false;
+    }
+
+    /**
+     * Checks that all fields have been entered
+     *
+     * @return Boolean
+     */
+    private Boolean hasMissingData() {
+
+        boolean hasMissingData = true;
+
         String message = "Appointment %s is required!";
 
         if (titleField.getText().isEmpty()) {
             addAppointmentErrorLabel.setText(String.format(message, "title"));
             titleLabel.setTextFill(Color.RED);
-            return false;
         } else if (descriptionField.getText().isEmpty()) {
             addAppointmentErrorLabel.setText(String.format(message, "description"));
             descriptionLabel.setTextFill(Color.RED);
-            return false;
         } else if (locationField.getText().isEmpty()) {
             addAppointmentErrorLabel.setText(String.format(message, "location"));
             locationLabel.setTextFill(Color.RED);
-            return false;
         } else if (typeField.getText().isEmpty()) {
             addAppointmentErrorLabel.setText(String.format(message, "type"));
             typeLabel.setTextFill(Color.RED);
-            return false;
         } else if (startDatePicker.getValue() == null) {
             addAppointmentErrorLabel.setText(String.format(message, "start date"));
             startLabel.setTextFill(Color.RED);
-            return false;
         } else if (startTimeField.getText().isEmpty()) {
             addAppointmentErrorLabel.setText(String.format(message, "start time"));
-            startLabel.setTextFill(Color.RED);
-            return false;
         } else if (endDatePicker.getValue() == null) {
             addAppointmentErrorLabel.setText(String.format(message, "end date"));
             endLabel.setTextFill(Color.RED);
-            return false;
         } else if (endTimeField.getText().isEmpty()) {
             addAppointmentErrorLabel.setText(String.format(message, "end time"));
             endLabel.setTextFill(Color.RED);
-            return false;
         } else if (customerSelect.getSelectionModel().isEmpty()) {
             addAppointmentErrorLabel.setText(String.format(message, "customer"));
             customerLabel.setTextFill(Color.RED);
-            return false;
         } else if (contactSelect.getSelectionModel().isEmpty()) {
             addAppointmentErrorLabel.setText(String.format(message, "contact"));
             contactLabel.setTextFill(Color.RED);
-            return false;
         } else if (userSelect.getSelectionModel().isEmpty()) {
             addAppointmentErrorLabel.setText(String.format(message, "user"));
             userLabel.setTextFill(Color.RED);
-            return false;
+        } else {
+            hasMissingData = false;
         }
 
-        return true;
+        return hasMissingData;
+    }
+
+    private int getIdFromComboBox(ComboBox comboBox) {
+        return utils.getIdFromComboString((String) comboBox.getSelectionModel().getSelectedItem());
     }
 
     /**
@@ -453,5 +507,25 @@ public class AddUpdateAppointment {
                 return LocalDate.parse(dateString, dtf);
             }
         };
+    }
+
+    /**
+     * Convenience method to get the start date/time
+     *
+     * @return LocalDateTime containing the Appointment start
+     */
+    private LocalDateTime getStart() {
+        String startString = startDatePicker.getValue() + " " + startTimeField.getText();
+        return LocalDateTime.parse(startString, utils.getDateTimeFormatter());
+    }
+
+    /**
+     * Convenience method to get the end date/time
+     *
+     * @return LocalDateTime containing the Appointment end
+     */
+    private LocalDateTime getEnd() {
+        String endString = endDatePicker.getValue() + " " + endTimeField.getText();
+        return LocalDateTime.parse(endString, utils.getDateTimeFormatter());
     }
 }

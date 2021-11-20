@@ -162,8 +162,6 @@ public class Appointment {
 
     /**
      * Title setter
-     *
-     * @return void
      */
     public void setTitle(String title) {
         this.title = title;
@@ -180,8 +178,6 @@ public class Appointment {
 
     /**
      * Description setter
-     *
-     * @return void
      */
     public void setDescription(String description) {
         this.description = description;
@@ -198,8 +194,6 @@ public class Appointment {
 
     /**
      * Location setter
-     *
-     * @return void
      */
     public void setLocation(String location) {
         this.location = location;
@@ -216,8 +210,6 @@ public class Appointment {
 
     /**
      * Type setter
-     *
-     * @return void
      */
     public void setType(String type) {
         this.type = type;
@@ -234,8 +226,6 @@ public class Appointment {
 
     /**
      * Start setter
-     *
-     * @return void
      */
     public void setStart(LocalDateTime start) {
         this.start = start;
@@ -252,8 +242,6 @@ public class Appointment {
 
     /**
      * End setter
-     *
-     * @return void
      */
     public void setEnd(LocalDateTime end) {
         this.end = end;
@@ -279,8 +267,6 @@ public class Appointment {
 
     /**
      * Customer ID setter
-     *
-     * @return void
      */
     public void setCustomerId(int customerId) {
         this.customerId = customerId;
@@ -306,8 +292,6 @@ public class Appointment {
 
     /**
      * User ID setter
-     *
-     * @return void
      */
     public void setUserId(int userId) {
         this.userId = userId;
@@ -333,8 +317,6 @@ public class Appointment {
 
     /**
      * Contact ID setter
-     *
-     * @return void
      */
     public void setContactId(int contactId) {
         this.contactId = contactId;
@@ -356,6 +338,24 @@ public class Appointment {
      */
     public static ObservableList<Appointment> getAll() {
         return new AppointmentDaoImpl().getAll();
+    }
+
+    /**
+     * Fetches all appointments for the current week
+     *
+     * @return list of appointments
+     */
+    public static ObservableList<Appointment> getThisWeek() {
+        return new AppointmentDaoImpl().getThisWeek();
+    }
+
+    /**
+     * Fetches all appointments for the current month
+     *
+     * @return list of appointments
+     */
+    public static ObservableList<Appointment> getThisMonth() {
+        return new AppointmentDaoImpl().getThisMonth();
     }
 
     /**
@@ -381,5 +381,20 @@ public class Appointment {
      */
     public Boolean delete() {
         return new AppointmentDaoImpl().delete(this);
+    }
+
+    /**
+     * Override the equals method to compare appointment objects
+     */
+    @Override
+    public boolean equals(Object obj) {
+
+        if (obj == null || obj.getClass() != this.getClass()) {
+            return false;
+        }
+
+        final Appointment other = (Appointment) obj;
+
+        return this.id == other.getId();
     }
 }

@@ -1,5 +1,9 @@
 package model;
 
+import dao.ContactDaoImpl;
+import dao.CustomerDaoImpl;
+import javafx.collections.ObservableList;
+
 /**
  * <pre>
  * The contact model
@@ -37,6 +41,15 @@ public class Contact {
         this.id = id;
         this.name = name;
         this.email = email;
+    }
+
+    /**
+     * Fetches all contacts from the database
+     *
+     * @return list of all contacts
+     */
+    public static ObservableList<Contact> getAll() {
+        return new ContactDaoImpl().getAll();
     }
 
     /**

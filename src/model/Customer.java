@@ -298,4 +298,19 @@ public class Customer {
     public Boolean delete() {
         return new CustomerDaoImpl().delete(this);
     }
+
+    /**
+     * Override the equals method to compare customer objects
+     */
+    @Override
+    public boolean equals(Object obj) {
+
+        if (obj == null || obj.getClass() != this.getClass()) {
+            return false;
+        }
+
+        final Customer other = (Customer) obj;
+
+        return this.id == other.getId();
+    }
 }

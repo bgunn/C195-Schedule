@@ -150,8 +150,22 @@ public class Customers {
                 Integer.valueOf(customer.getId()).toString().equals(searchString);
     }
 
+    /**
+     * Switches the scene to the appointments view
+     *
+     * @param event The button click event
+     */
     public void onAppointmentsButtonClick(ActionEvent event) {
         utils.switchScenes(event, "appointments", "Appointments");
+    }
+
+    /**
+     * Switches the scene to the reports view
+     *
+     * @param event The button click event
+     */
+    public void onReportsButtonClick(ActionEvent event) {
+        utils.switchScenes(event, "reports", "Reports");
     }
 
     /**
@@ -204,7 +218,7 @@ public class Customers {
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirm Delete");
-        alert.setContentText("The selected customer and any appointments will be deleted. Are you sure?");
+        alert.setContentText("Customer " + customer.getName() + " and any associated appointments will be deleted. Are you sure?");
         Optional<ButtonType> confirmation = alert.showAndWait();
 
         if (confirmation.isPresent() && confirmation.get() == ButtonType.OK) {

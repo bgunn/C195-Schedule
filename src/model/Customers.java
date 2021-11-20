@@ -18,7 +18,7 @@ public class Customers {
     /**
      * Holds the observable customers list
      */
-    private final ObservableList<Customer> allCustomers = FXCollections.observableArrayList();
+    private final ObservableList<Customer> customers = FXCollections.observableArrayList();
 
     /**
      * Return the utils instance
@@ -31,7 +31,7 @@ public class Customers {
     /**
      * Returns all customers
      */
-    public ObservableList<Customer> getAllCustomers() {
-        return allCustomers;
+    public ObservableList<Customer> getCustomers() {
+        return customers;
     }
 }

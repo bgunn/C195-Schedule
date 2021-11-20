@@ -12,8 +12,7 @@ import java.util.Optional;
 public class CustomerDaoImpl implements Dao<Customer> {
 
     private final Utils utils = Utils.getInstance();
-    private final Customers customers = Customers.getInstance();
-    private final ObservableList<Customer> allCustomers = customers.getAllCustomers();
+    private final ObservableList<Customer> customers = Customers.getInstance().getCustomers();
 
     @Override
     public Optional<Customer> get(int id) {
@@ -55,17 +54,17 @@ public class CustomerDaoImpl implements Dao<Customer> {
 
         String query = "SELECT c.*, d.division FROM customers c, first_level_divisions d WHERE c.Division_ID = d.Division_ID;";
 
-        allCustomers.clear();
+        customers.clear();
 
         try {
 
             ResultSet results = JDBC.getConnection().createStatement().executeQuery(query);
 
             while (results.next()) {
-                allCustomers.add(createCustomer(results));
+                customers.add(createCustomer(results));
             }
 
-            return allCustomers;
+            return customers;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -121,7 +120,11 @@ public class CustomerDaoImpl implements Dao<Customer> {
                 if (generatedKeys.next()) {
 
                     Optional<Customer> optional = get(generatedKeys.getInt(1));
-                    return optional.get();
+                    Customer c = optional.get();
+
+                    customers.add(c);
+
+                    return c;
 
                 } else {
                     throw new SQLException("Failed to get the customer ID from the inserted customer");
@@ -167,7 +170,12 @@ public class CustomerDaoImpl implements Dao<Customer> {
             }
 
             Optional<Customer> optional = get(customer.getId());
-            return optional.get();
+
+            Customer c = optional.get();
+
+            customers.set(customers.indexOf(c), c);
+
+            return c;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -191,7 +199,7 @@ public class CustomerDaoImpl implements Dao<Customer> {
             stmt.execute();
 
             if (stmt.getUpdateCount() > 0) {
-                allCustomers.remove(customer);
+                customers.remove(customer);
                 return true;
             }
 

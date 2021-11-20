@@ -1,5 +1,10 @@
 package model;
 
+import dao.AppointmentDaoImpl;
+import dao.CustomerDaoImpl;
+import dao.UserDaoImpl;
+import javafx.collections.ObservableList;
+
 import java.time.LocalDateTime;
 
 /**
@@ -118,5 +123,23 @@ public class User {
      */
     public String getLastUpdatedBy() {
         return lastUpdatedBy;
+    }
+
+    /**
+     * Fetches all users from the database
+     *
+     * @return list of all users
+     */
+    public static ObservableList<User> getAll() {
+        return new UserDaoImpl().getAll();
+    }
+
+    /**
+     * Fetches all upcoming appointments for this user
+     *
+     * @return list of appointments
+     */
+    public Appointment getUpcomingAppointment() {
+        return new AppointmentDaoImpl().getUpcomingByUserId(id);
     }
 }

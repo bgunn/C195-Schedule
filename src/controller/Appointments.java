@@ -7,12 +7,12 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
 import model.Appointment;
-import model.Customer;
 import utils.Utils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.Temporal;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 public class Appointments {
@@ -108,6 +108,11 @@ public class Appointments {
     private static Appointment appointment;
 
     /**
+     * The filtered appointments list
+     */
+    FilteredList<Appointment> filteredAppointments;
+
+    /**
      * Store the Utils singleton
      */
     private final Utils utils = Utils.getInstance();
@@ -133,7 +138,7 @@ public class Appointments {
         customerIdCol.setCellValueFactory(new PropertyValueFactory<>("customerId"));
         userIdCol.setCellValueFactory(new PropertyValueFactory<>("userId"));
 
-        FilteredList<Appointment> filteredAppointments = new FilteredList<>(Appointment.getAll(), b -> true);
+        filteredAppointments = new FilteredList<>(Appointment.getThisMonth(), b -> true);
 
         appointmentSearch.textProperty().addListener((observable, oldValue, newValue) -> {
 
@@ -151,6 +156,17 @@ public class Appointments {
         // Update the format of the start and end date time columns
         startCol.setCellFactory(getDateCell(utils.getDateTimeFormatter()));
         endCol.setCellFactory(getDateCell(utils.getDateTimeFormatter()));
+
+        // Check for an upcoming appointment
+        Appointment upcoming = utils.getUser().getUpcomingAppointment();
+
+        if (upcoming != null) {
+            // appointment ID, date, and time
+            String m = "Appointment " + upcoming.getId() + " is starting at " +
+                    utils.getStringFromLocalDateTime(upcoming.getStart());
+
+            upcomingApptMessage.setText(m);
+        }
     }
 
     /**
@@ -228,11 +244,21 @@ public class Appointments {
     }
 
     /**
+     * Switches the scene to the reports view
+     *
+     * @param event The button click event
+     */
+    public void onReportsButtonClick(ActionEvent event) {
+        utils.switchScenes(event, "reports", "Reports");
+    }
+
+    /**
      * Launches the new appointment window
      *
      * @param event The button click event
      */
     public void onNewButtonClick(ActionEvent event) {
+        appointment = null;
         utils.openWindow(event, "addUpdateAppointment", "Add Appointment");
     }
 
@@ -261,6 +287,55 @@ public class Appointments {
      * @param event The button click event
      */
     public void onDeleteButtonClick(ActionEvent event) {
+
+        clearErrors();
+
+        appointment = appointmentsTable.getSelectionModel().getSelectedItem();
+
+        if (appointment == null) {
+            appointmentsError("You must select an appointment");
+            return;
+        }
+
+        Optional<ButtonType> confirmation = utils.doConfirm("Confirm Delete",
+                "Appointment " + appointment.getId() + " will be deleted. Are you sure?");
+
+        if (confirmation.isPresent() && confirmation.get() == ButtonType.OK) {
+            if (appointment.delete()) {
+                String msg = appointment.getType() + " appointment " + appointment.getId() + " was successfully deleted.";
+                utils.doInform("Success", msg);
+            }
+        }
+    }
+
+    /**
+     * Updates table with all apointments
+     *
+     * @param event The button click event
+     */
+    public void onAllRadioClick(ActionEvent event) {
+        filteredAppointments = new FilteredList<>(Appointment.getAll(), b -> true);
+        appointmentsTable.setItems(filteredAppointments);
+    }
+
+    /**
+     * Updates table with all appointments in the current week
+     *
+     * @param event The button click event
+     */
+    public void onWeekRadioClick(ActionEvent event) {
+        filteredAppointments = new FilteredList<>(Appointment.getThisWeek(), b -> true);
+        appointmentsTable.setItems(filteredAppointments);
+    }
+
+    /**
+     * Updates table with all appointments in the current month
+     *
+     * @param event The button click event
+     */
+    public void onMonthRadioClick(ActionEvent event) {
+        filteredAppointments = new FilteredList<>(Appointment.getThisMonth(), b -> true);
+        appointmentsTable.setItems(filteredAppointments);
     }
 
     /**

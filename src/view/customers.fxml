@@ -15,7 +15,7 @@
    <children>
       <ToolBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="44.0" prefWidth="1345.0" style="-fx-spacing: 10px;">
         <items>
-            <Button layoutX="10.0" layoutY="13.0" mnemonicParsing="false" text="Reports">
+            <Button layoutX="10.0" layoutY="13.0" mnemonicParsing="false" onAction="#onReportsButtonClick" text="Reports">
                <font>
                   <Font name="CiscoSans-Bold" size="18.0" />
                </font>

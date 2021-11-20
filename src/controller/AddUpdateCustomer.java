@@ -170,11 +170,6 @@ public class AddUpdateCustomer {
         }
 
         if (Boolean.TRUE.equals(status)) {
-
-            // Update the customers observable list
-            Customer.getAll();
-
-            // Close the add/update window
             utils.closeWindow(event);
         }
     }
