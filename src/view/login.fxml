@@ -37,7 +37,7 @@
                   <RowConstraints maxHeight="106.0" minHeight="2.0" prefHeight="46.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <Label fx:id="locationLabel" prefHeight="22.0" prefWidth="70.0" text="Location:" GridPane.halignment="RIGHT">
+                  <Label fx:id="locationLabel" alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="23.0" prefWidth="148.0" text="Location:" GridPane.halignment="RIGHT">
                      <font>
                         <Font name="CiscoSans-Bold" size="18.0" />
                      </font>
@@ -50,7 +50,7 @@
                         <Font name="CiscoSans" size="14.0" />
                      </font>
                   </Label>
-                  <Label fx:id="usernameLabel" text="Username:" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+                  <Label fx:id="usernameLabel" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="143.0" text="Username:" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
                      <font>
                         <Font name="CiscoSans-Bold" size="18.0" />
                      </font>
@@ -60,7 +60,7 @@
                         <Insets left="20.0" />
                      </GridPane.margin>
                   </TextField>
-                  <Label fx:id="passwordLabel" text="Password:" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
+                  <Label fx:id="passwordLabel" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="151.0" text="Password:" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
                      <font>
                         <Font name="CiscoSans-Bold" size="18.0" />
                      </font>
