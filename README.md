@@ -16,8 +16,17 @@
    3. user     - The database username. Default `sqlUser`
    4. password - The database password. Default `Passw0rd!`
 2. launch IntelliJ and open the project
-3. In the navigation tree, find the Main package at src/main/Main
-4. Right-click on the Main package and select `Run 'Main.main()`
+3. Set the Project SDK by navigating to `File -> Project Structure -> Project`
+   1. Select SDK 11 from the **Project SDK** dropdown
+   2. Select `SDK default` from the **Project language level** dropdown
+4. Add the MySQL connector driver by navigating to `File -> Project Structure -> Libraries`
+   1. Click the + icon and select `From Maven`
+   2. Enter mysql:mysql-connector-java:8.0.25
+5. Add the JavFX library by navigating to `File -> Project Structure -> Libraries`
+   1. Click the + icon and select Java
+   2. Browse to the lib folder of the JavaFX SDK installed on your system and select `Ok`
+6. In the navigation tree, find the Main package at src/main/Main
+7. Right-click on the Main package and select `Run 'Main.main()`
 
 ## Additional Report 
 The additional report is called **User Schedule by Location**. This report provides the following data:
