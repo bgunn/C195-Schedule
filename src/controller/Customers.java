@@ -173,6 +173,7 @@ public class Customers {
      * @param event
      */
     public void onNewButtonClick(ActionEvent event) {
+        customer = null;
         utils.openWindow(event, "addUpdateCustomer", "Add Customer");
     }
 

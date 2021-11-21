@@ -5,6 +5,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import model.User;
@@ -49,7 +50,7 @@ public class Login {
      * The password text field
      */
     @FXML
-    public TextField passwordField;
+    public PasswordField passwordField;
 
     /**
      * The location label
@@ -113,7 +114,7 @@ public class Login {
 
         if (!doValidate()) return;
 
-        Optional<User> optional = new UserDaoImpl().getByUsername("admin");
+        Optional<User> optional = new UserDaoImpl().getByUsername(usernameField.getText());
 
         if (optional.isPresent()) {
 
@@ -122,7 +123,7 @@ public class Login {
             if (Objects.equals(user.getPassword(), passwordField.getText())) {
 
                 // Log the user login activity
-                writeLoginActivity("Successful login for user '" +  usernameField.getText() + "'");
+                writeLoginActivity("Successful login for user '" +  user.getUsername() + "'");
 
                 // Store the authenticated user on the utils singleton
                 utils.setUser(user);

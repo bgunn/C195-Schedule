@@ -185,10 +185,35 @@ public class AppointmentDaoImpl implements Dao<Appointment> {
         return null;
     }
 
-    public ResultSet customerReport() {
+    /**
+     * Execute the specified report query
+     *
+     * @param report the report query to execute
+     * @return the query results
+     */
+    public ResultSet reportQuery(String report) {
 
-        String query = "SELECT Type, MONTHNAME(Start) as Month, count(*) AS Count " +
-                "FROM appointments GROUP BY Type, MONTHNAME(Start) ORDER BY Type, Start;";
+        String query;
+
+        switch (report) {
+
+            case "customer":
+                query = "SELECT Type, MONTHNAME(Start) as Month, count(*) AS Count " +
+                        "FROM appointments GROUP BY Type, MONTHNAME(Start) ORDER BY Type, Start;";
+                break;
+
+            case "contact":
+                query = "SELECT c.Contact_Name, a.* FROM appointments a, contacts c " +
+                        "WHERE a.Contact_ID = c.Contact_ID ORDER BY Contact_Name, Start;";
+                break;
+
+            case "user":
+                query = "SELECT u.User_Name, a.* FROM appointments a, users u " +
+                        "WHERE a.User_ID = u.User_ID ORDER BY User_Name, Location, Start;";
+                break;
+
+            default: return null;
+        }
 
         try {
             return conn.createStatement().executeQuery(query);

@@ -254,11 +254,11 @@ public class AddUpdateCustomer {
             addCustomerErrorLabel.setText(String.format(message, "post code"));
             postCodeLabel.setTextFill(Color.RED);
             return false;
-        } else if (countrySelect.getSelectionModel().isEmpty()) {
+        } else if (countrySelect.getSelectionModel().getSelectedItem().isEmpty()) {
             addCustomerErrorLabel.setText(String.format(message, "country"));
             countryLabel.setTextFill(Color.RED);
             return false;
-        } else if (divisionSelect.getSelectionModel().isEmpty()) {
+        } else if (divisionSelect.getSelectionModel().getSelectedItem().isEmpty()) {
             addCustomerErrorLabel.setText(String.format(message, "division"));
             divisionLabel.setTextFill(Color.RED);
             return false;

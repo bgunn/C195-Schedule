@@ -14,8 +14,17 @@
 
 
 ## Additional Report 
-> additional report 
+The additional report is called **User Schedule by Location**. This report provides\
+the following data:
 
+- User
+- Location
+- Appointment ID
+- Title
+- Description
+- Start
+- End
+- Customer ID
 
 ## MySQL Connector driver
 > mysql-connector-java-8.0.25
