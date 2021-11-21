@@ -352,7 +352,7 @@ public class AddUpdateAppointment {
         int startHour = utils.localDateTimeToEST(getStart()).getHour();
         int endHour = utils.localDateTimeToEST(getEnd()).getHour();
 
-        if (startHour < 8 || startHour > 22 || endHour < 8 || endHour > 22) {
+        if (startHour < 8 || startHour >= 22 || endHour < 8 || endHour >= 22) {
 
             utils.doError(errorTitle, "The appointment time is outside of business hours (08:00 - 22:00)");
 

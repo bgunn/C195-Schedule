@@ -26,13 +26,14 @@
 6. Add the JavFX library by navigating to `File -> Project Structure -> Libraries`
    1. Click the + icon and select Java
    2. Browse to the lib folder of the JavaFX SDK 17 installed on your system and select `Ok`
-7. Add the PATH_TO_FX environment variable
-   1. Windows: Navigate to System -> Advanced -> Environment Variables and click `New`
-      1. Add `PATH_TO_FX` for the name and for the valu, navigate to JavaFX SDK 17 lib directory
-      2. Click OK
-   2. MacOS / Linux: In a terminal enter `export PATH_TO_FX=/path/to/javafx17/lib`
-8. In the navigation tree, find the Main package at src/main/Main
-9. Right-click on the Main package and select `Run 'Main.main()`
+7. Add the JavaFX module path and modules to the run configuration by navigating to `Run -> Edit configuration`
+   1. Add the following VM options:
+      1. --module-path ${PATH_TO_FX} --add-modules javafx.fxml,javafx.controls,javafx.graphics
+8. Add the PATH_TO_FX Path Variable by navigating to `File -> Settings -> Path Variables`
+   1. If PATH_TO_FX is already set, verify it is pointing to JavaFX SDK. If it isn't, select PATH_TO_FX and click the pencil icon to edit the value.
+   2. If PATH_TO_FX is not set, click the + icon and set the name to PATH_TO_FX and for the value, browse to the lib folder of the JavaFX 17 SDK install location
+9. In the navigation tree, find the Main package at src/main/Main
+10. Right-click on the Main package and select `Run 'Main.main()`
 
 ## Additional Report 
 The additional report is called **User Schedule by Location**. This report provides the following data:
