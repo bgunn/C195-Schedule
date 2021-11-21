@@ -24,9 +24,14 @@
    2. Enter mysql:mysql-connector-java:8.0.25
 5. Add the JavFX library by navigating to `File -> Project Structure -> Libraries`
    1. Click the + icon and select Java
-   2. Browse to the lib folder of the JavaFX SDK installed on your system and select `Ok`
-6. In the navigation tree, find the Main package at src/main/Main
-7. Right-click on the Main package and select `Run 'Main.main()`
+   2. Browse to the lib folder of the JavaFX SDK 17 installed on your system and select `Ok`
+6. Add the PATH_TO_FX environment variable
+   1. Windows: Navigate to System -> Advanced -> Environment Variables and click `New`
+      1. Add `PATH_TO_FX` for the name and for the valu, navigate to JavaFX SDK 17 lib directory
+      2. Click OK
+   2. MacOS / Linux: In a terminal enter `export PATH_TO_FX=/path/to/javafx17/lib`
+7. In the navigation tree, find the Main package at src/main/Main
+8. Right-click on the Main package and select `Run 'Main.main()`
 
 ## Additional Report 
 The additional report is called **User Schedule by Location**. This report provides the following data:
